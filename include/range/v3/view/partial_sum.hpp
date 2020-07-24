@@ -43,21 +43,21 @@ namespace ranges
     namespace detail
     {
         // clang-format off
-        template<typename Rng, typename Fun>
-        CPP_concept_fragment(partial_sum_view_constraints_, requires()(0) &&
-            copy_constructible<range_value_t<Rng>> &&
-            constructible_from<range_value_t<Rng>, range_reference_t<Rng>> &&
-            assignable_from<range_value_t<Rng> &, range_reference_t<Rng>> &&
-            indirectly_binary_invocable_<Fun &, iterator_t<Rng>, iterator_t<Rng>> &&
+        CPP_template(typename Rng, typename Fun)(
+        concept (partial_sum_view_constraints_)(Rng, Fun),
+            copy_constructible<range_value_t<Rng>> CPP_and
+            constructible_from<range_value_t<Rng>, range_reference_t<Rng>> CPP_and
+            assignable_from<range_value_t<Rng> &, range_reference_t<Rng>> CPP_and
+            indirectly_binary_invocable_<Fun &, iterator_t<Rng>, iterator_t<Rng>> CPP_and
             assignable_from<
                 range_value_t<Rng> &,
                 indirect_result_t<Fun &, iterator_t<Rng>, iterator_t<Rng>>>
         );
         template<typename Rng, typename Fun>
-        CPP_concept_bool partial_sum_view_constraints =
+        CPP_concept partial_sum_view_constraints =
             input_range<Rng> &&
             copy_constructible<Fun> &&
-            CPP_fragment(detail::partial_sum_view_constraints_, Rng, Fun);
+            CPP_concept_ref(detail::partial_sum_view_constraints_, Rng, Fun);
         // clang-format on
     } // namespace detail
     /// \endcond
@@ -171,9 +171,10 @@ namespace ranges
     };
 
 #if RANGES_CXX_DEDUCTION_GUIDES >= RANGES_CXX_DEDUCTION_GUIDES_17
-    CPP_template(typename Rng, typename Fun)(requires copy_constructible<Fun>)
-        partial_sum_view(Rng &&, Fun)
-            ->partial_sum_view<views::all_t<Rng>, Fun>;
+    CPP_template(typename Rng, typename Fun)( //
+        requires copy_constructible<Fun>)
+    partial_sum_view(Rng &&, Fun)
+        -> partial_sum_view<views::all_t<Rng>, Fun>;
 #endif
 
     namespace views

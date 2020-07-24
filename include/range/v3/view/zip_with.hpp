@@ -137,17 +137,17 @@ namespace ranges
     namespace views
     {
         // clang-format off
-        template<typename Fun, typename ...Rngs>
-        CPP_concept_fragment(zippable_with_, requires()(0) &&
-            invocable<Fun&, iterator_t<Rngs>...> &&
-            invocable<Fun&, copy_tag, iterator_t<Rngs>...> &&
+        CPP_template(typename Fun, typename... Rngs)(
+        concept (zippable_with_)(Fun, Rngs...),
+            invocable<Fun&, iterator_t<Rngs>...> CPP_and
+            invocable<Fun&, copy_tag, iterator_t<Rngs>...> CPP_and
             invocable<Fun&, move_tag, iterator_t<Rngs>...>
         );
         template<typename Fun, typename ...Rngs>
-        CPP_concept_bool zippable_with =
+        CPP_concept zippable_with =
             and_v<input_range<Rngs>...> &&
             copy_constructible<Fun> &&
-            CPP_fragment(views::zippable_with_, Fun, Rngs...);
+            CPP_concept_ref(views::zippable_with_, Fun, Rngs...);
         // clang-format on
     } // namespace views
 
@@ -369,9 +369,10 @@ namespace ranges
     };
 
 #if RANGES_CXX_DEDUCTION_GUIDES >= RANGES_CXX_DEDUCTION_GUIDES_17
-    CPP_template(typename Fun, typename... Rng)(requires copy_constructible<Fun>)
-        zip_with_view(Fun, Rng &&...)
-            ->zip_with_view<Fun, views::all_t<Rng>...>;
+    CPP_template(typename Fun, typename... Rng)( //
+        requires copy_constructible<Fun>)
+    zip_with_view(Fun, Rng &&...)
+        -> zip_with_view<Fun, views::all_t<Rng>...>;
 #endif
 
     namespace views

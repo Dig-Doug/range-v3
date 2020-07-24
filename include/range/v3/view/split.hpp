@@ -44,16 +44,16 @@ namespace ranges
     namespace detail
     {
         // clang-format off
-        template<typename R>
-        CPP_concept_fragment(tiny_range_, requires()(0) &&
+        CPP_template(typename R)(
+        concept (tiny_range_)(R),
             ranges::type<std::integral_constant<
                 decltype(std::remove_reference_t<R>::size()),
-                std::remove_reference_t<R>::size()>> &&
+                std::remove_reference_t<R>::size()>> CPP_and
             (std::remove_reference_t<R>::size() <= 1)
         );
         template<typename R>
-        CPP_concept_bool tiny_range =
-            sized_range<R> && CPP_fragment(detail::tiny_range_, R);
+        CPP_concept tiny_range =
+            sized_range<R> && CPP_concept_ref(detail::tiny_range_, R);
         // clang-format on
     } // namespace detail
 
